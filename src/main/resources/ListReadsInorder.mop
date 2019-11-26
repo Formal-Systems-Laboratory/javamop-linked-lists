@@ -1,34 +1,34 @@
 import java.util.*;
 import java.io.*;
 
-InorderReads(LinkedList l) {
+InorderReads() {
 
         ArrayList<String> goodReads  = new ArrayList<String>();
         ArrayList<String> badReads  = new ArrayList<String>();
 
-        event begin before :
-            call(* LinkedList.readList(*)) {
+        event begin before (LinkedList l) :
+            call(* LinkedList.loadList()) && target(l) {
                 System.out.println("List Read Complete");
                 }
 
-        event goodread after returning (ListNode n, RichFile f) :
-            call(ListNode LinkedList.read(RichFile))
-            && target(n)
+        event goodread after (LinkedList l, RichFile f)  returning :
+            call(* LinkedList.read(RichFile))
+            && target(l)
             && args(f) {
                 goodReads.add(f.filepath);
-                System.out.println(" Read - " + n.contents);
+                System.out.println(" Read - " + f.filepath);
             }
 
-        event badread after throwing (ListNode n, RichFile f) :
-            call(ListNode LinkedList.read(RichFile))
-            && target(n)
+        event badread after (LinkedList l, RichFile f) throwing :
+            call(* LinkedList.read(RichFile))
+            && target(l)
             && args(f) {
                 badReads.add(f.filepath);
-                System.out.println(" Ignored - " + n.contents);
+                System.out.println(" Ignored - " + f.filepath);
             }
 
-        event end after() :
-            call(* LinkedList.readList(*)) {
+        event end after(LinkedList l) :
+            call(* LinkedList.loadList()) && target(l) {
                 System.out.println("List Read Complete");
                 }
 
