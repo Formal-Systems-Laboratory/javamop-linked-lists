@@ -1,0 +1,43 @@
+import java.util.*;
+import java.io.*;
+
+InorderReads(LinkedList l) {
+
+        ArrayList<String> goodReads  = new ArrayList<String>();
+        ArrayList<String> badReads  = new ArrayList<String>();
+
+        event begin before :
+            call(* LinkedList.readList(*)) {
+                System.out.println("List Read Complete");
+                }
+
+        event goodread after returning (ListNode n, RichFile f) :
+            call(ListNode LinkedList.read(RichFile))
+            && target(n)
+            && args(f) {
+                goodReads.add(f.filepath);
+                System.out.println(" Read - " + n.contents);
+            }
+
+        event badread after throwing (ListNode n, RichFile f) :
+            call(ListNode LinkedList.read(RichFile))
+            && target(n)
+            && args(f) {
+                badReads.add(f.filepath);
+                System.out.println(" Ignored - " + n.contents);
+            }
+
+        event end after() :
+            call(* LinkedList.readList(*)) {
+                System.out.println("List Read Complete");
+                }
+
+
+	ere : begin (goodread | badread)* end
+
+	@fail {
+	  System.err.println(
+            "Reads didn't happen in expected order"
+          );
+	}
+}

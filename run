@@ -9,14 +9,14 @@ repo_dir="$(cd "$(dirname "$0")"; pwd)"
 rvmonitor_bin="$repo_dir/ext/rv-monitor/target/release/rv-monitor/bin"
 javamop_bin="$repo_dir/ext/javamop/target/release/javamop/javamop/bin"
 specs_dir="$repo_dir/test/resources"
-
+java_classpath=$"repo_dir/ext/*":"$repo_dir/ext/javamop/target/release/javamop/javamop/lib/*":"$repo_dir/ext/rv-monitor/target/release/rv-monitor/lib/*":$CLASSPATH
 progress "generate aspectJ and rvm files"
 
 ( cd "$repo_dir/src/test/resources" && \
   "$javamop_bin/javamop" -merge *.mop && \
   mkdir -p classes/mop && \
   "$rvmonitor_bin/rv-monitor" -merge -d classes/mop/ *.rvm && \
-  javac classes/mop/MultiSpec_1RuntimeMonitor.java && \
-  rm rm classes/mop/MultiSpec_1RuntimeMonitor.java && \
-  javamop_bin/javamopagent MultiSpec_1MonitorAspect.aj classes -n JavaMOPAgent -excludeJars )
+  javac -sourcepath "$repo_dir/src/main/java" -cp "$java_classpath" classes/mop/ListReadsInorderRuntimeMonitor.java && \
+  rm classes/mop/ListReadsInorderRuntimeMonitor.java && \
+  "$javamop_bin/javamopagent" ListReadsInorderMonitorAspect.aj classes -n JavaMOPAgent -excludeJars )
 
