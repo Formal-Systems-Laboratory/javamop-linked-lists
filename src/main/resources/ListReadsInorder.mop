@@ -42,11 +42,11 @@ InorderReads(LinkedList l) {
                     }
 
                     if(!successfulReads.equals(goodReads)) {
-                        System.err.println("[RUNTIME WARNING] Read Order different");
+                        System.err.println("[RUNTIME WARNING] Ordering Not Maintained");
                     }
 
-                    if(l.fileIndexList.size() != (goodReads.size() + badReads.size())) {
-                        System.err.println("[RUNTIME WARNING] Nodes dropped due to reasons other than IOException");
+                    if((l.fileIndexList.size() - goodReads.size())  != badReads.size()) {
+                        System.err.println("[RUNTIME WARNING] Arbitrary drop (reasons other than IOException");
                     }
                 }
 
