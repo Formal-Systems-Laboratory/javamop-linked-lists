@@ -1,35 +1,51 @@
 import java.util.*;
 import java.io.*;
 
-InorderReads() {
+InorderReads(LinkedList l) {
 
         ArrayList<String> goodReads  = new ArrayList<String>();
-        ArrayList<String> badReads  = new ArrayList<String>();
+        ArrayList<String> badReads = new ArrayList<String>();
 
         event begin before (LinkedList l) :
             call(* LinkedList.loadList()) && target(l) {
-                System.out.println("List Read Complete");
+                System.out.println("List Read Begin");
                 }
 
-        event goodread after (LinkedList l, RichFile f)  returning :
-            call(* LinkedList.read(RichFile))
-            && target(l)
+        event goodread after (LinkedList l, RichFile f)  returning (ListNode n):
+            call(ListNode LinkedList.readNode(RichFile))
+            && this(l)
             && args(f) {
                 goodReads.add(f.filepath);
-                System.out.println(" Read - " + f.filepath);
+                System.out.println("[RUNTIME-INFO] Read - " + n.contents + " from file " + f.filepath );
             }
 
-        event badread after (LinkedList l, RichFile f) throwing :
-            call(* LinkedList.read(RichFile))
-            && target(l)
-            && args(f) {
-                badReads.add(f.filepath);
-                System.out.println(" Ignored - " + f.filepath);
-            }
+       event badread after (LinkedList l, RichFile f) throwing (IOException e) :
+           call(ListNode LinkedList.readNode(RichFile))
+           && this(l)
+           && args(f) {
+               badReads.add(f.filepath);
+               System.out.println("[RUNTIME INFO] Ignored - " + f.filepath);
+           }
+
 
         event end after(LinkedList l) :
-            call(* LinkedList.loadList()) && target(l) {
-                System.out.println("List Read Complete");
+            call(* LinkedList.loadList()) && this(l) {
+
+                    ArrayList<String> successfulReads = new ArrayList<String>();
+
+                    for(RichFile f : l.fileIndexList) {
+                        if(goodReads.contains(f.filepath)) {
+                            successfulReads.add(f.filepath);
+                        }
+                    }
+
+                    if(!successfulReads.equals(goodReads)) {
+                        System.err.println("[RUNTIME WARNING] Read Order different");
+                    }
+
+                    if(l.fileIndexList.size() != (goodReads.size() + badReads.size())) {
+                        System.err.println("[RUNTIME WARNING] Reads dropped due to reasons other than IOException");
+                    }
                 }
 
 
@@ -37,7 +53,7 @@ InorderReads() {
 
 	@fail {
 	  System.err.println(
-            "Reads didn't happen in expected order"
+            "[RUNTIME WARNING] Read didn't executed as expected"
           );
 	}
 }
