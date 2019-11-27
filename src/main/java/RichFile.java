@@ -1,5 +1,6 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.acl.NotOwnerException;
 
 public class RichFile {
 
@@ -17,9 +18,11 @@ public class RichFile {
         this.readable = readable;
     }
 
-    public String read() throws IOException {
+    public String read() throws IOException, NotOwnerException {
         if(readable) {
             return  prefix + this.filepath;
+        } if(filepath.equals("NoPermisssionFile")) {
+            throw new NotOwnerException();
         }
         throw new FileNotFoundException();
     }

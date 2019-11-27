@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class LinkedListsTests {
 
-    private final static String testFilePrefix = "TestNode";
+    private final static String testFilePrefix = "TestFile";
 
 
     @Test
@@ -71,6 +71,29 @@ public class LinkedListsTests {
         StringBuffer actual = new StringBuffer();
         LinkedList l = new LinkedList(fileIndexList);
         toArray(l).forEach(n -> actual.append(n.contents));
+        assert(expected.toString().equals(actual.toString()));
+    }
+
+    @Test
+    void testMultiNodePermissionsError() {
+        ArrayList<RichFile> fileIndexList = new ArrayList<>();
+        StringBuffer expected = new StringBuffer();
+        // Add a file not accessible due to permissions
+        fileIndexList.add(new RichFile("NoPermisssionFile", false));
+        for(int i = 0; i < 5; ++i) {
+            if(i % 2 == 1) {
+                // Odd Indexed files dropped
+                fileIndexList.add(new RichFile(testFilePrefix + i, false));
+            } else {
+                fileIndexList.add(new RichFile(testFilePrefix + i));
+                expected.append("contents-" + testFilePrefix + i);
+            }
+        }
+        StringBuffer actual = new StringBuffer();
+        LinkedList l = new LinkedList(fileIndexList);
+        toArray(l).forEach(n -> actual.append(n.contents));
+
+        // Tests Pass Monitoring Should Fail
         assert(expected.toString().equals(actual.toString()));
     }
 

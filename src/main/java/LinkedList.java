@@ -27,13 +27,13 @@ public class LinkedList {
                     tail.next = node;
                     tail = node;
                 }
-            } catch(Exception e) {
+            } catch(Throwable e) {
                 continue;
             }
         }
     }
 
-    ListNode readNode(RichFile nodeFile) throws IOException {
+    ListNode readNode(RichFile nodeFile) throws Throwable {
        ListNode node = new ListNode(nodeFile.read());
        return node;
     }
