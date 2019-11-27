@@ -6,14 +6,11 @@ progress () { echo "====== $@" ; }
 progress "Update Submodules RV-Monitor and JavaMOP"
 ( mkdir -p "$repo_dir/ext" && \
   cd "$repo_dir/ext" && \
-  git submodule update --init --recursive && \
-  cd "$repo_dir/ext/rv-monitor" && \
-  git cherry-pick 3d2011bfed4398ee8ebd4126a5d9059902235717 )
+  git submodule update --init --recursive )
 
 if [ ! -f "$repo_dir/ext/rv-monitor/target/release/rv-monitor/lib/rv-monitor.jar" ]; then
     progress "Building RV-Monitor (without LLVM)"
     ( cd "$repo_dir/ext/rv-monitor" && \
-      mvn package -DskipTests && \
       mvn install -DskipTests -pl -installer )
 fi
 
