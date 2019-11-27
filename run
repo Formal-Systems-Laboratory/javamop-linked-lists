@@ -8,8 +8,6 @@ progress () { echo "====== $@" ; }
 repo_dir="$(cd "$(dirname "$0")"; pwd)"
 rvmonitor_bin="$repo_dir/ext/rv-monitor/target/release/rv-monitor/bin"
 javamop_bin="$repo_dir/ext/javamop/target/release/javamop/javamop/bin"
-specs_dir="$repo_dir/test/resources"
-java_classpath=$"$repo_dir/ext/*":"$repo_dir/ext/javamop/target/release/javamop/javamop/lib/*":"$repo_dir/ext/rv-monitor/target/release/rv-monitor/lib/*":$CLASSPATH
 gen_src_dir="$repo_dir/target/generated-sources"
 
 progress "generate aspectJ and rvm files"
