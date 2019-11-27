@@ -8,6 +8,13 @@
     <artifactId>LinkedList</artifactId>
     <version>0.1-SNAPSHOT</version>
 
+    <properties>
+        <aspectj.version>1.8.13</aspectj.version>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+
     <build>
         <plugins>
             <plugin>
@@ -25,7 +32,9 @@
                 <configuration>
                     <source>8</source>
                     <target>8</target>
+                    <useIncrementalCompilation>false</useIncrementalCompilation>
                 </configuration>
+
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -44,6 +53,18 @@
                         </configuration>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjtools</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -55,6 +76,13 @@
                             <goal>compile</goal>
                             <goal>test-compile</goal>
                         </goals>
+                        <configuration>
+                            <showWeaveInfo>true</showWeaveInfo>
+                            <verbose>true</verbose>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                            <complianceLevel>1.8</complianceLevel>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -83,6 +111,16 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>build-helper-maven-plugin</artifactId>
             <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>1.8.13</version>
+        </dependency>
+        <dependency>
+            <groupId>com.runtimeverification.rvmonitor</groupId>
+            <artifactId>rv-monitor-rt</artifactId>
+            <version>1.4-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
