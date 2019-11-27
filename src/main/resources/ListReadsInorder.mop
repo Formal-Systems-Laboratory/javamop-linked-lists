@@ -3,8 +3,7 @@ import java.io.*;
 
 InorderReads(LinkedList l) {
 
-        ArrayList<String> goodReads  = new ArrayList<String>();
-        ArrayList<String> badReads = new ArrayList<String>();
+        ArrayList<Optional<String>> reads = new ArrayList<Optional<String>>();
 
         event begin before (LinkedList l) :
             call(* LinkedList.loadList()) && target(l) {
@@ -12,19 +11,19 @@ InorderReads(LinkedList l) {
                 }
 
         event goodread after (LinkedList l, RichFile f)  returning (ListNode n):
-            call(ListNode LinkedList.readNode(RichFile))
+            call(ListNode LinkedList.readNode(RichFile) throws Throwable+)
             && this(l)
             && args(f) {
-                goodReads.add(f.filepath);
+                reads.add(Optional.of(f.filepath));
                 System.out.println("[RUNTIME-INFO] Read - " + n.contents + " from file " + f.filepath );
             }
 
        event badread after (LinkedList l, RichFile f) throwing (Throwable e) :
-           call(ListNode LinkedList.readNode(RichFile))
+           call(ListNode LinkedList.readNode(RichFile) throws Throwable+)
            && this(l)
            && args(f) {
                if(e instanceof IOException) {
-                   badReads.add(f.filepath);
+                   reads.add(Optional.empty());
                    System.out.println("[RUNTIME INFO] Ignored - " + f.filepath);
                }
            }
@@ -33,23 +32,23 @@ InorderReads(LinkedList l) {
         event end after(LinkedList l) :
             call(* LinkedList.loadList()) && this(l) {
 
-                    ArrayList<String> successfulReads = new ArrayList<String>();
-
-                    for(RichFile f : l.fileIndexList) {
-                        if(goodReads.contains(f.filepath)) {
-                            successfulReads.add(f.filepath);
+                if(reads.size() > l.fileIndexList.size()){
+                    System.err.println("[RUNTIME WARNING] Extra Read Calls");
+                }
+                else if(reads.size() < l.fileIndexList.size()) {
+                    System.err.println("[RUNTIME WARNING] Arbitrary Drops (Other than IOException)");
+                }
+                else {
+                    for(int i = 0; i < reads.size(); ++i) {
+                        Optional<String> read = reads.get(i);
+                        if(read.isPresent() && !(read.get().equals(l.fileIndexList.get(i).filepath))) {
+                            System.err.println(
+                                "[RUNTIME WARNING] " + read.get() + " read out of order"
+                            );
                         }
                     }
-
-                    if(!successfulReads.equals(goodReads)) {
-                        System.err.println("[RUNTIME WARNING] Ordering Not Maintained");
-                    }
-
-                    if((l.fileIndexList.size() - goodReads.size())  != badReads.size()) {
-                        System.err.println("[RUNTIME WARNING] Arbitrary drop (reasons other than IOException");
-                    }
                 }
-
+            }
 
 	ere : begin (goodread | badread)* end
 
