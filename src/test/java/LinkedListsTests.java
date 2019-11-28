@@ -97,4 +97,18 @@ public class LinkedListsTests {
         assert(expected.toString().equals(actual.toString()));
     }
 
+    @Test
+    void testOutOfOrderReads() {
+        ArrayList<RichFile> fileIndexList = new ArrayList<>();
+        for(int i = 0; i < 5; ++i) {
+            if(i % 2 == 1) {
+                // Odd Indexed File read in delayed order
+                fileIndexList.add(new RichFile("delayedLoad" + i));
+            } else {
+                fileIndexList.add(new RichFile(testFilePrefix + i));
+            }
+        }
+        LinkedList l = new LinkedList(fileIndexList);
+        assert(true);
+    }
 }

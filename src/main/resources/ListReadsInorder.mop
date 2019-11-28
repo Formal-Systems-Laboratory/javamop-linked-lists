@@ -45,6 +45,9 @@ InorderReads(LinkedList l) {
                             System.err.println(
                                 "[RUNTIME WARNING] " + read.get() + " read out of order"
                             );
+                            System.err.println(
+                                "[RUNTIME WARNING] " + l.fileIndexList.get(i).filepath + " was expected"
+                            );
                         }
                     }
                 }
