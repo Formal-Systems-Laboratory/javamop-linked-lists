@@ -4,3 +4,7 @@
 [submodule "ext/javamop"]
 	path = ext/javamop
 	url = https://github.com/runtimeverification/javamop.git
+[submodule "rv-monitor"]
+	shallow = true
+[submodule "javamop"]
+	shallow = true
